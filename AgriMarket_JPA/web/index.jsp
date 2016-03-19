@@ -19,46 +19,45 @@
         <link rel="stylesheet" href="assets/mobirise-gallery/style.css">
         <link rel="stylesheet" href="assets/mobirise-slider/style.css">
         <link rel="stylesheet" href="assets/mobirise/css/mbr-additional.css" type="text/css">
-        <!-- Google Fonts -->
-        <link href='http://fonts.googleapis.com/css?family=Titillium+Web:400,200,300,700,600' rel='stylesheet' type='text/css'>
-        <link href='http://fonts.googleapis.com/css?family=Roboto+Condensed:400,700,300' rel='stylesheet' type='text/css'>
-        <link href='http://fonts.googleapis.com/css?family=Raleway:400,100' rel='stylesheet' type='text/css'>
 
-        <!-- Bootstrap -->
-        <!--<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">-->
-
-        <!--Font Awesome--> 
-        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
-
-        <!-- Custom CSS -->
-        <link rel="stylesheet" href="assets/flat_cart/css/owl.carousel.css">
-        <link rel="stylesheet" href="assets/flat_cart/style.css">
-        <link rel="stylesheet" href="assets/flat_cart/css/responsive.css">
-
-
-        <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
-        
+        <script src="assets/web/assets/jquery/jquery.min.js"></script>
 
         <script>
+            function getMax(proName) {
+            <c:set var="products" value="${applicationScope.products}"/>
+
+                var max = 1;
+            <c:forEach items="${products}" var="product">
+
+                if ('${product.name}' == proName)
+                    max = ${product.quantity};
+
+            </c:forEach>
+
+                return max;
+            }
+
 
             function addToCart(name) {
-                if (${empty sessionScope.user})
-                    location.href = "sign_in.jsp";
-                var jsonData = {
-                    operation: "add",
-                    timestamp: new Date().getTime(),
-                    product: name
-                };
-                $.ajax({
-                    url: 'Cart',
-                    type: 'GET',
-                    contentType: 'application/json',
-                    data: jsonData,
-                    dataType: 'json',
-                    success: function (data) {
-                        refreshCartAgain(data);
-                    }
-                });
+                if (getMax(name) > 0) {
+                    if (${empty sessionScope.user})
+                        location.href = "sign_in.jsp";
+                    var jsonData = {
+                        operation: "add",
+                        timestamp: new Date().getTime(),
+                        product: name
+                    };
+                    $.ajax({
+                        url: 'Cart',
+                        type: 'GET',
+                        contentType: 'application/json',
+                        data: jsonData,
+                        dataType: 'json',
+                        success: function (data) {
+                            refreshCartAgain(data);
+                        }
+                    });
+                }
             }
             function refreshCart() {
 
@@ -139,58 +138,12 @@
 
             });
         </script>
+
     </head>
     <body >
 
-        <section class="engine"><a rel="external" href="https://mobirise.com">Mobirise web design software
-            </a></section>
-        <section class="mbr-navbar mbr-navbar--freeze mbr-navbar--absolute mbr-navbar--transparent mbr-navbar--sticky mbr-navbar--auto-collapse" id="menu-0">
-            <div class="mbr-navbar__section mbr-section">
-                <div class="mbr-section__container container">
-                    <div class="mbr-navbar__container">
-                        <div class="mbr-navbar__column mbr-navbar__column--s mbr-navbar__brand">
-                            <span class="mbr-navbar__brand-link mbr-brand mbr-brand--inline">
-                                <span class="mbr-brand__logo"><a href="index.jsp"><img class="mbr-navbar__brand-img mbr-brand__img" src="assets/images/untitled-382x276-11.png" alt="AgriMarket" title="Flower Shop"></a></span>
-                                <span class="mbr-brand__name"><a class="mbr-brand__name text-white" href="index.jsp">AGRIMARKET</a></span>
-                            </span>
-                        </div>
-                        <div class="mbr-navbar__hamburger mbr-hamburger text-white"><span class="mbr-hamburger__line"></span></div>
-                        <div class="mbr-navbar__column mbr-navbar__menu">
-                            <nav class="mbr-navbar__menu-box mbr-navbar__menu-box--inline-right">
-                                <div class="mbr-navbar__column">
-                                    <ul class="mbr-navbar__items mbr-navbar__items--right mbr-buttons mbr-buttons--freeze mbr-buttons--right btn-decorator mbr-buttons--active">
-                                        <li class="mbr-navbar__item">
-                                            <a class="mbr-buttons__link btn text-white" href="index.jsp">HOME</a>
-                                        </li>
 
-                                    </ul></div>
-                                <div class="mbr-navbar__column">
-                                    <ul class="mbr-navbar__items mbr-navbar__items--right mbr-buttons mbr-buttons--freeze mbr-buttons--right btn-inverse mbr-buttons--active">
-                                        <li class="mbr-navbar__item">
-                                            <a  id="asignin" class="mbr-buttons__btn btn btn-default" href="sign_in.jsp">
-                                                <p id="signin">Sign In</p></a>
-
-                                        </li>
-                                        <c:if test="${!empty sessionScope.user}">
-                                            <script type="text/javascript">
-
-                                                $("#signin").text('${sessionScope.user.userName}');
-                                                $("#asignin").attr("href", "profile.jsp");
-
-                                            </script>
-                                            <li class="mbr-navbar__item">
-                                                <div class="shopping-item" style="margin-top: 0px; margin-left:35px;">
-                                                    <a href="cart.jsp">Cart - <span class="cart-amunt" id="total">$800</span> <i class="fa fa-shopping-cart"></i> <span class="product-count" id="itemNo">5</span></a>
-                                                </div>
-                                            </li>
-                                        </c:if>
-                                    </ul></div>
-                            </nav>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <jsp:include page="header.jsp"/>
 
         <section class="mbr-box mbr-section mbr-section--relative mbr-section--fixed-size mbr-section--full-height mbr-section--bg-adapted mbr-parallax-background mbr-after-navbar" id="header1-1"  style="background-image: url(assets/images/istock-000016896298xlarge-4200x2833-56.jpg);">
             <div class="mbr-box__magnet mbr-box__magnet--sm-padding mbr-box__magnet--center-left">
@@ -218,17 +171,46 @@
             <div class="mbr-section__container container mbr-section__container--first">
                 <div class="mbr-header mbr-header--wysiwyg row">
                     <div class="col-sm-8 col-sm-offset-2">
-                        <h3 class="mbr-header__text">TITLE !</h3>
-                        <p class="mbr-header__subtext">SUBTITLE</p>
+                        <h3 class="mbr-header__text">Search ....</h3>
+                        <!--<p class="mbr-header__subtext">SUBTITLE</p>-->
                     </div>
                 </div>
             </div>
         </section>
 
+
         <section class="mbr-section" id="content1-9">
             <div class="mbr-section__container container mbr-section__container--middle">
                 <div class="row">
-                    <div class="mbr-article mbr-article--wysiwyg col-sm-8 col-sm-offset-2">Text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text.</div>
+                    <div class="mbr-article mbr-article--wysiwyg col-sm-8 col-sm-offset-2">
+                        <form method="get" id="new" action="getallproducts">
+                            <div   style="    margin-left: -4px;    ">
+                                <input type="text" onkeyup="searchByName();" id="searchTxt" placeholder="search...." name="search"/>
+                                <input type="submit" value="search" />
+                                <br>
+                                <!--<label class="category-label">-->
+                                <div  style="     margin-top: -43px;        
+                                      width: -5px; ">
+                                    <select  id="search" name="options" style="    margin-top: 16px;margin-left: 313px;">                
+                                        <option> choose Options </option>                
+                                        <option>Product Name</option>
+                                        <option>Category</option>
+                                        <option>Product Price</option>
+                                    </select>
+                                    <select   class="pcategory" required="" id="category" name="category" style="display: none;margin-top: -26px;margin-left: 477px;">
+                                        <option selected>Select Category</option>
+
+                                    </select>
+                                    <select  id="product-price" required="" name="product-price" style="display: none;      margin-top: -26px;margin-left: 468px;">             
+                                        <option>Select Price</option>
+                                        <option>5</option>
+                                        <option>10</option>
+                                        <option>15</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </section>
@@ -237,11 +219,14 @@
             <!-- Gallery -->
             <div class="container mbr-section__container mbr-gallery-layout-article mbr-section__container--last">
                 <div class=" col-sm-8 col-sm-offset-2">
-                    <div class="row mbr-gallery-row">
-                        <jsp:include page="getallproducts"/>
-                        <c:forEach items="${applicationScope.products}" var="product">
+                    <div class="row mbr-gallery-row" id="productsContainer">
+                        <%--<jsp:include page="getallproducts"/>--%>
+                        <c:if test="${requestScope.getproducts ==null}" >
+                            <c:redirect url="getallproducts" />
+                        </c:if>
+                        <c:forEach items="${requestScope.getproducts}" var="product">
                             <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 mbr-gallery-item">
-                                <a  onclick="addToCart('${product.name}');" data-slide-to="0" data-toggle="modal">
+                                <a id="${product.name}Click" onclick="addToCart('${product.name}');" data-slide-to="0" data-toggle="modal">
                                     <c:if test="${empty sessionScope.user}">
                                         <script>
                                             $("#${product.name}").href = "sign_in.jsp";
@@ -253,14 +238,23 @@
                                             $("#image").attr("src",${product.imageUrl});
                                         </script>
                                     </c:if>
-                                    <span class="icon glyphicon glyphicon-plus">${product.name}</span>
+                                    <span id="${product.name}Span" class="icon glyphicon glyphicon-plus">${product.name}</span>
+                                    <c:if test="${product.quantity==0}">
+                                        <script>
+                                            $("#${product.name}Span").attr("class", "icon glyphicon glyphicon-alert");
+                                            $("#${product.name}").href = "";
+                                        </script>
+
+                                        <center> <h5 class="mbr_figure__caption">Out of stock</h5></center>
+                                        </c:if>
                                 </a>
                             </div>
                         </c:forEach>   
                     </div>
                 </div>
-                <div class="clearfix"></div>
+
             </div>
+
 
         </section>
 
@@ -288,6 +282,34 @@
         <script src="assets/bootstrap-carousel-swipe/bootstrap-carousel-swipe.js"></script>
         <script src="assets/mobirise/js/script.js"></script>
         <script src="assets/mobirise-gallery/script.js"></script>
+        <script type="text/javascript">
+                                            $("#search").change(function () {
+                                                var options = $('#search :selected').text();
+                                                if (options == 'Category') {
+                                                    $.ajax({
+                                                        url: "gategories",
+                                                        type: 'GET',
+                                                        contentType: 'application/json',
+                                                        dataType: 'json',
+                                                        success: function (data) {
+                                                            $.each(data, function (i, category) {
+                                                                //                                                         write("<img id='"+category.id+";' src='no.png' />");
+                                                                $('.pcategory').append('<option   value=' + category.id + '>' + category.name + '</option>');
+                                                                //                        location.reload();   
+                                                            });
+                                                        }
+                                                    });
+                                                    $("#category").css("display", "block");
+                                                    $("#product-price").css("display", "none");
+                                                } else if (options == 'Product Price') {
+                                                    $("#product-price").css("display", "block");
+                                                    $("#category").css("display", "none");
+                                                } else {
+                                                    $("#category").css("display", "none");
+                                                    $("#product-price").css("display", "none");
+                                                }
 
+                                            });
+        </script>
     </body>
 </html>
