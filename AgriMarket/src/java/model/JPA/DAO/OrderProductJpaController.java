@@ -26,13 +26,18 @@ import model.pojo.OrderProductPK;
  */
 public class OrderProductJpaController implements Serializable {
 
+    private static EntityManager em;
+
     public OrderProductJpaController(EntityManagerFactory emf) {
         this.emf = emf;
     }
     private EntityManagerFactory emf = null;
 
-    public EntityManager getEntityManager() {
-        return emf.createEntityManager();
+    public synchronized EntityManager getEntityManager() {
+        if (em == null) {
+            return emf.createEntityManager();
+        }
+        return em;
     }
 
     public void create(OrderProduct orderProduct) throws PreexistingEntityException, Exception {
@@ -41,7 +46,7 @@ public class OrderProductJpaController implements Serializable {
         }
         orderProduct.getOrderProductPK().setProductId(orderProduct.getProduct().getName());
         orderProduct.getOrderProductPK().setOrderId(orderProduct.getOrder1().getId());
-        EntityManager em = null;
+
         try {
             em = getEntityManager();
             em.getTransaction().begin();
@@ -80,7 +85,7 @@ public class OrderProductJpaController implements Serializable {
     public void edit(OrderProduct orderProduct) throws NonexistentEntityException, Exception {
         orderProduct.getOrderProductPK().setProductId(orderProduct.getProduct().getName());
         orderProduct.getOrderProductPK().setOrderId(orderProduct.getOrder1().getId());
-        EntityManager em = null;
+        
         try {
             em = getEntityManager();
             em.getTransaction().begin();
@@ -132,7 +137,7 @@ public class OrderProductJpaController implements Serializable {
     }
 
     public void destroy(OrderProductPK id) throws NonexistentEntityException {
-        EntityManager em = null;
+        
         try {
             em = getEntityManager();
             em.getTransaction().begin();
@@ -171,7 +176,7 @@ public class OrderProductJpaController implements Serializable {
     }
 
     private List<OrderProduct> findOrderProductEntities(boolean all, int maxResults, int firstResult) {
-        EntityManager em = getEntityManager();
+        em = getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
             cq.select(cq.from(OrderProduct.class));
@@ -187,7 +192,7 @@ public class OrderProductJpaController implements Serializable {
     }
 
     public OrderProduct findOrderProduct(OrderProductPK id) {
-        EntityManager em = getEntityManager();
+        em = getEntityManager();
         try {
             return em.find(OrderProduct.class, id);
         } finally {
@@ -196,7 +201,7 @@ public class OrderProductJpaController implements Serializable {
     }
 
     public int getOrderProductCount() {
-        EntityManager em = getEntityManager();
+        em = getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
             Root<OrderProduct> rt = cq.from(OrderProduct.class);
@@ -207,5 +212,5 @@ public class OrderProductJpaController implements Serializable {
             em.close();
         }
     }
-    
+
 }

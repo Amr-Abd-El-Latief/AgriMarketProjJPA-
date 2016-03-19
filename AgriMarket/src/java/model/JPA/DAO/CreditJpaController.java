@@ -26,17 +26,22 @@ import model.pojo.Credit;
  */
 public class CreditJpaController implements Serializable {
 
+    private static EntityManager em;
+
     public CreditJpaController(EntityManagerFactory emf) {
         this.emf = emf;
     }
     private EntityManagerFactory emf = null;
 
-    public EntityManager getEntityManager() {
-        return emf.createEntityManager();
+    public synchronized EntityManager getEntityManager() {
+        if (em == null) {
+            return emf.createEntityManager();
+        }
+        return em;
     }
 
     public void create(Credit credit) throws PreexistingEntityException, Exception {
-        EntityManager em = null;
+        
         try {
             em = getEntityManager();
             em.getTransaction().begin();
@@ -69,7 +74,7 @@ public class CreditJpaController implements Serializable {
     }
 
     public void edit(Credit credit) throws IllegalOrphanException, NonexistentEntityException, Exception {
-        EntityManager em = null;
+        
         try {
             em = getEntityManager();
             em.getTransaction().begin();
@@ -118,7 +123,7 @@ public class CreditJpaController implements Serializable {
     }
 
     public void destroy(String id) throws IllegalOrphanException, NonexistentEntityException {
-        EntityManager em = null;
+        
         try {
             em = getEntityManager();
             em.getTransaction().begin();
@@ -158,7 +163,7 @@ public class CreditJpaController implements Serializable {
     }
 
     private List<Credit> findCreditEntities(boolean all, int maxResults, int firstResult) {
-        EntityManager em = getEntityManager();
+        em = getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
             cq.select(cq.from(Credit.class));
@@ -174,7 +179,7 @@ public class CreditJpaController implements Serializable {
     }
 
     public Credit findCredit(String id) {
-        EntityManager em = getEntityManager();
+        em = getEntityManager();
         try {
             return em.find(Credit.class, id);
         } finally {
@@ -183,7 +188,7 @@ public class CreditJpaController implements Serializable {
     }
 
     public int getCreditCount() {
-        EntityManager em = getEntityManager();
+        em = getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
             Root<Credit> rt = cq.from(Credit.class);
@@ -194,5 +199,5 @@ public class CreditJpaController implements Serializable {
             em.close();
         }
     }
-    
+
 }

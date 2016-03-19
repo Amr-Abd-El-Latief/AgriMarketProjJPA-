@@ -26,13 +26,18 @@ import model.pojo.Interests;
  */
 public class InterestsJpaController implements Serializable {
 
+    private static EntityManager em ;
+
     public InterestsJpaController(EntityManagerFactory emf) {
         this.emf = emf;
     }
     private EntityManagerFactory emf = null;
 
-    public EntityManager getEntityManager() {
-        return emf.createEntityManager();
+    public synchronized EntityManager getEntityManager() {
+        if (em == null) {
+            return emf.createEntityManager();
+        }
+        return em;
     }
 
     public void create(Interests interests) throws IllegalOrphanException, PreexistingEntityException, Exception {
@@ -50,7 +55,6 @@ public class InterestsJpaController implements Serializable {
         if (illegalOrphanMessages != null) {
             throw new IllegalOrphanException(illegalOrphanMessages);
         }
-        EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
@@ -78,7 +82,7 @@ public class InterestsJpaController implements Serializable {
     }
 
     public void edit(Interests interests) throws IllegalOrphanException, NonexistentEntityException, Exception {
-        EntityManager em = null;
+        
         try {
             em = getEntityManager();
             em.getTransaction().begin();
@@ -129,7 +133,7 @@ public class InterestsJpaController implements Serializable {
     }
 
     public void destroy(String id) throws NonexistentEntityException {
-        EntityManager em = null;
+        
         try {
             em = getEntityManager();
             em.getTransaction().begin();
@@ -163,7 +167,7 @@ public class InterestsJpaController implements Serializable {
     }
 
     private List<Interests> findInterestsEntities(boolean all, int maxResults, int firstResult) {
-        EntityManager em = getEntityManager();
+        em = getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
             cq.select(cq.from(Interests.class));
@@ -179,7 +183,7 @@ public class InterestsJpaController implements Serializable {
     }
 
     public Interests findInterests(String id) {
-        EntityManager em = getEntityManager();
+        em = getEntityManager();
         try {
             return em.find(Interests.class, id);
         } finally {
@@ -188,7 +192,7 @@ public class InterestsJpaController implements Serializable {
     }
 
     public int getInterestsCount() {
-        EntityManager em = getEntityManager();
+        em = getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
             Root<Interests> rt = cq.from(Interests.class);
@@ -199,5 +203,5 @@ public class InterestsJpaController implements Serializable {
             em.close();
         }
     }
-    
+
 }

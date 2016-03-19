@@ -25,20 +25,27 @@ import model.pojo.Category;
  */
 public class CategoryJpaController implements Serializable {
 
+    private static EntityManager em;
+
     public CategoryJpaController(EntityManagerFactory emf) {
         this.emf = emf;
+
     }
     private EntityManagerFactory emf = null;
 
-    public EntityManager getEntityManager() {
-        return emf.createEntityManager();
+    public synchronized EntityManager getEntityManager() {
+        if (em == null) {
+            return emf.createEntityManager();
+        } else {
+            return em;
+        }
     }
 
     public void create(Category category) {
         if (category.getProductList() == null) {
             category.setProductList(new ArrayList<Product>());
         }
-        EntityManager em = null;
+
         try {
             em = getEntityManager();
             em.getTransaction().begin();
@@ -67,7 +74,7 @@ public class CategoryJpaController implements Serializable {
     }
 
     public void edit(Category category) throws IllegalOrphanException, NonexistentEntityException, Exception {
-        EntityManager em = null;
+
         try {
             em = getEntityManager();
             em.getTransaction().begin();
@@ -123,7 +130,7 @@ public class CategoryJpaController implements Serializable {
     }
 
     public void destroy(Integer id) throws IllegalOrphanException, NonexistentEntityException {
-        EntityManager em = null;
+
         try {
             em = getEntityManager();
             em.getTransaction().begin();
@@ -163,7 +170,7 @@ public class CategoryJpaController implements Serializable {
     }
 
     private List<Category> findCategoryEntities(boolean all, int maxResults, int firstResult) {
-        EntityManager em = getEntityManager();
+        em = getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
             cq.select(cq.from(Category.class));
@@ -179,7 +186,7 @@ public class CategoryJpaController implements Serializable {
     }
 
     public Category findCategory(Integer id) {
-        EntityManager em = getEntityManager();
+        em = getEntityManager();
         try {
             return em.find(Category.class, id);
         } finally {
@@ -188,7 +195,7 @@ public class CategoryJpaController implements Serializable {
     }
 
     public int getCategoryCount() {
-        EntityManager em = getEntityManager();
+        em = getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
             Root<Category> rt = cq.from(Category.class);
@@ -199,5 +206,5 @@ public class CategoryJpaController implements Serializable {
             em.close();
         }
     }
-    
+
 }

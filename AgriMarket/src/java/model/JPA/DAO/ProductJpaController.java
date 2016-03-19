@@ -27,20 +27,25 @@ import model.pojo.Product;
  */
 public class ProductJpaController implements Serializable {
 
+    private static EntityManager em;
+
     public ProductJpaController(EntityManagerFactory emf) {
         this.emf = emf;
     }
     private EntityManagerFactory emf = null;
 
-    public EntityManager getEntityManager() {
-        return emf.createEntityManager();
+    public synchronized EntityManager getEntityManager() {
+        if (em == null) {
+            return emf.createEntityManager();
+        } else {
+            return em;
+        }
     }
 
     public void create(Product product) throws PreexistingEntityException, Exception {
         if (product.getOrderProductList() == null) {
             product.setOrderProductList(new ArrayList<OrderProduct>());
         }
-        EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
@@ -83,7 +88,7 @@ public class ProductJpaController implements Serializable {
     }
 
     public void edit(Product product) throws IllegalOrphanException, NonexistentEntityException, Exception {
-        EntityManager em = null;
+
         try {
             em = getEntityManager();
             em.getTransaction().begin();
@@ -153,7 +158,7 @@ public class ProductJpaController implements Serializable {
     }
 
     public void destroy(String id) throws IllegalOrphanException, NonexistentEntityException {
-        EntityManager em = null;
+
         try {
             em = getEntityManager();
             em.getTransaction().begin();
@@ -198,7 +203,7 @@ public class ProductJpaController implements Serializable {
     }
 
     private List<Product> findProductEntities(boolean all, int maxResults, int firstResult) {
-        EntityManager em = getEntityManager();
+        em = getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
             cq.select(cq.from(Product.class));
@@ -214,7 +219,7 @@ public class ProductJpaController implements Serializable {
     }
 
     public Product findProduct(String id) {
-        EntityManager em = getEntityManager();
+        em = getEntityManager();
         try {
             return em.find(Product.class, id);
         } finally {
@@ -223,7 +228,7 @@ public class ProductJpaController implements Serializable {
     }
 
     public int getProductCount() {
-        EntityManager em = getEntityManager();
+        em = getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
             Root<Product> rt = cq.from(Product.class);
@@ -234,5 +239,5 @@ public class ProductJpaController implements Serializable {
             em.close();
         }
     }
-    
+
 }

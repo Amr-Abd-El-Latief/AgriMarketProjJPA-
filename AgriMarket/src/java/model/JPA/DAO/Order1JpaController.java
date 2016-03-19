@@ -26,20 +26,25 @@ import model.pojo.Order1;
  */
 public class Order1JpaController implements Serializable {
 
+    private static EntityManager em;
+
     public Order1JpaController(EntityManagerFactory emf) {
         this.emf = emf;
     }
     private EntityManagerFactory emf = null;
 
-    public EntityManager getEntityManager() {
-        return emf.createEntityManager();
+    public synchronized EntityManager getEntityManager() {
+        if (em == null) {
+            return emf.createEntityManager();
+        }
+        return em;
     }
 
     public void create(Order1 order1) {
         if (order1.getOrderProductList() == null) {
             order1.setOrderProductList(new ArrayList<OrderProduct>());
         }
-        EntityManager em = null;
+
         try {
             em = getEntityManager();
             em.getTransaction().begin();
@@ -77,7 +82,7 @@ public class Order1JpaController implements Serializable {
     }
 
     public void edit(Order1 order1) throws IllegalOrphanException, NonexistentEntityException, Exception {
-        EntityManager em = null;
+
         try {
             em = getEntityManager();
             em.getTransaction().begin();
@@ -147,7 +152,7 @@ public class Order1JpaController implements Serializable {
     }
 
     public void destroy(Integer id) throws IllegalOrphanException, NonexistentEntityException {
-        EntityManager em = null;
+
         try {
             em = getEntityManager();
             em.getTransaction().begin();
@@ -192,7 +197,7 @@ public class Order1JpaController implements Serializable {
     }
 
     private List<Order1> findOrder1Entities(boolean all, int maxResults, int firstResult) {
-        EntityManager em = getEntityManager();
+        em = getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
             cq.select(cq.from(Order1.class));
@@ -208,7 +213,7 @@ public class Order1JpaController implements Serializable {
     }
 
     public Order1 findOrder1(Integer id) {
-        EntityManager em = getEntityManager();
+        em = getEntityManager();
         try {
             return em.find(Order1.class, id);
         } finally {
@@ -217,7 +222,7 @@ public class Order1JpaController implements Serializable {
     }
 
     public int getOrder1Count() {
-        EntityManager em = getEntityManager();
+        em = getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
             Root<Order1> rt = cq.from(Order1.class);
@@ -228,5 +233,5 @@ public class Order1JpaController implements Serializable {
             em.close();
         }
     }
-    
+
 }

@@ -28,13 +28,18 @@ import model.pojo.User;
  */
 public class UserJpaController implements Serializable {
 
+    private static EntityManager em;
+
     public UserJpaController(EntityManagerFactory emf) {
         this.emf = emf;
     }
     private EntityManagerFactory emf = null;
 
-    public EntityManager getEntityManager() {
-        return emf.createEntityManager();
+    public synchronized EntityManager getEntityManager() {
+        if (em == null) {
+            return emf.createEntityManager();
+        }
+        return em;
     }
 
     public void create(User user) throws IllegalOrphanException, PreexistingEntityException, Exception {
@@ -55,7 +60,6 @@ public class UserJpaController implements Serializable {
         if (illegalOrphanMessages != null) {
             throw new IllegalOrphanException(illegalOrphanMessages);
         }
-        EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
@@ -112,7 +116,7 @@ public class UserJpaController implements Serializable {
     }
 
     public void edit(User user) throws IllegalOrphanException, NonexistentEntityException, Exception {
-        EntityManager em = null;
+        
         try {
             em = getEntityManager();
             em.getTransaction().begin();
@@ -212,7 +216,7 @@ public class UserJpaController implements Serializable {
     }
 
     public void destroy(String id) throws IllegalOrphanException, NonexistentEntityException {
-        EntityManager em = null;
+        
         try {
             em = getEntityManager();
             em.getTransaction().begin();
@@ -264,7 +268,7 @@ public class UserJpaController implements Serializable {
     }
 
     private List<User> findUserEntities(boolean all, int maxResults, int firstResult) {
-        EntityManager em = getEntityManager();
+        em = getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
             cq.select(cq.from(User.class));
@@ -280,7 +284,7 @@ public class UserJpaController implements Serializable {
     }
 
     public User findUser(String id) {
-        EntityManager em = getEntityManager();
+        em = getEntityManager();
         try {
             return em.find(User.class, id);
         } finally {
@@ -289,7 +293,7 @@ public class UserJpaController implements Serializable {
     }
 
     public int getUserCount() {
-        EntityManager em = getEntityManager();
+        em = getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
             Root<User> rt = cq.from(User.class);
@@ -300,5 +304,5 @@ public class UserJpaController implements Serializable {
             em.close();
         }
     }
-    
+
 }
